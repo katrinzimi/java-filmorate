@@ -13,7 +13,7 @@ import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
-public class UsersTests {
+public class UserTest {
     private Validator validator;
 
     @BeforeEach

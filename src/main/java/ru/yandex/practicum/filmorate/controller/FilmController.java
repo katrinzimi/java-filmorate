@@ -8,42 +8,44 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    HashMap<Integer, Film> films = new HashMap<>();
+    LinkedHashMap<Integer, Film> films = new LinkedHashMap<>();
     int id;
 
     @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
         log.info("Получен запрос");
-        id += 1;
+        id++;
         films.put(id, film);
         film.setId(id);
+        log.info("Фильм создан: " + film);
         return film;
     }
 
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
         log.info("Получен зарос");
-        if (!films.containsKey(film.getId())) {
+        if (!films.containsKey(film.getId()) && film.getId() != 0) {
             throw new ValidationException("Такого id не существует");
-        } else {
-            films.remove(film.getId());
-            films.put(film.getId(), film);
         }
+        films.remove(film.getId());
+        films.put(film.getId(), film);
+        log.info("Фильм обновлен: " + film);
         return film;
     }
 
     @GetMapping("/films")
     public List<Film> getFilms() {
         log.info("Получен зарос");
-        ArrayList<Film> result = new ArrayList<>(films.values());
-        result.sort(Comparator.comparingInt(Film::getId));
+        LinkedList<Film> result = new LinkedList<>(new ArrayList<>(films.values()));
+        log.info("Получен список фильмов: " + result);
         return result;
     }
 }
+

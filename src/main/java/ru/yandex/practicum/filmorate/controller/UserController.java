@@ -21,13 +21,15 @@ public class UserController {
     @PostMapping("/users")
     public User add(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        id += 1;
+        id++;
         users.put(id, user);
         user.setId(id);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+        log.info("Пользователь создан: " + user);
         return user;
+
     }
 
     @PutMapping("/users")
@@ -35,19 +37,21 @@ public class UserController {
         log.info("Получен зарос");
         if (!users.containsKey(user.getId())) {
             throw new ValidationException("Такого id не существует");
-        } else {
-            users.remove(user.getId());
-            users.put(user.getId(), user);
-            if (user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
         }
+        users.remove(user.getId());
+        users.put(user.getId(), user);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        log.info("Пользователь обновлен: " + user);
         return user;
     }
 
     @GetMapping("/users")
     public List<User> getUsers() {
         log.info("Получен зарос");
-        return new ArrayList<>(users.values());
+        ArrayList<User> result = new ArrayList<>(users.values());
+        log.info("Получен список пользователей: " + result);
+        return result;
     }
 }
