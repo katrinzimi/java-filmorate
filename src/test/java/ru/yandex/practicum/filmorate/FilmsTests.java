@@ -26,12 +26,12 @@ class FilmsTests {
         Film film = new Film();
         film.setName("Титаник");
         film.setDescription("про любовь");
-        film.setReleaseDate(LocalDate.of(1994, 12, 14));
+        film.setReleaseDate(LocalDate.of(1894, 12, 14));
         film.setDuration(30);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         Assertions.assertEquals(violations.size(), 1);
-        Assertions.assertEquals("дата релиза — не раньше 28 декабря 1995 года", violations.iterator().next().getMessage());
+        Assertions.assertEquals("дата релиза — не раньше 28 декабря 1895 года", violations.iterator().next().getMessage());
     }
 
     @Test
