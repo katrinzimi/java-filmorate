@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 public class Film {
     private int id;
-    @NotBlank
+    @NotBlank(message = "не должно быть пустым")
     private String name;
     @Size(max = 200, message = "максимальная длина описания — 200 символов")
     private String description;
