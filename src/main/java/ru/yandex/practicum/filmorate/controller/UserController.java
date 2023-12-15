@@ -10,13 +10,13 @@ import javax.validation.Valid;
 import java.util.HashMap;
 
 
-@RestController("/users")
+@RestController
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     HashMap<Integer, User> users = new HashMap<>();
     int id;
 
-    @PostMapping
+    @PostMapping("/users")
     public User add(@Valid @RequestBody User user) {
         log.info("Получен зарос");
         user.setId(id);
@@ -28,7 +28,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping
+    @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         log.info("Получен зарос");
         if (!users.containsKey(user.getId())) {
@@ -43,7 +43,7 @@ public class UserController {
         return user;
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public HashMap<Integer, User> getUsers() {
         log.info("Получен зарос");
         return users;

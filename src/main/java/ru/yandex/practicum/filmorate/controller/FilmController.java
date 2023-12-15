@@ -10,13 +10,13 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.HashMap;
 
-@RestController("/films")
+@RestController
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     HashMap<Integer, Film> films = new HashMap<>();
     int id;
 
-    @PostMapping
+    @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
         log.info("Получен зарос");
         film.setId(id);
@@ -25,7 +25,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping
+    @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
         log.info("Получен зарос");
         if (!films.containsKey(film.getId())) {
@@ -39,7 +39,7 @@ public class FilmController {
         return film;
     }
 
-    @GetMapping
+    @GetMapping("/films")
     public HashMap<Integer, Film> getFilms() {
         log.info("Получен зарос");
         return films;
