@@ -3,14 +3,12 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.*;
 import java.time.LocalDate;
 import java.util.Set;
 
-@SpringBootApplication
 class FilmsTests {
     private Validator validator;
 
