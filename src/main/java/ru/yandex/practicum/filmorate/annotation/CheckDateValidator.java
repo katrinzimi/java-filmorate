@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class CheckDateValidator implements ConstraintValidator<CheckDate, LocalDate> {
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext constraintContext) {
-        LocalDate dateMin = LocalDate.of(1995, 12, 28);
-        return !date.isBefore(dateMin);
+        LocalDate dateMin = LocalDate.of(1895, 12, 28);
+        return date == null || !date.isBefore(dateMin);
     }
 }
 

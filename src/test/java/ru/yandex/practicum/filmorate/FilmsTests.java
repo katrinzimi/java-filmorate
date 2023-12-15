@@ -5,7 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -23,7 +26,7 @@ class FilmsTests {
         Film film = new Film();
         film.setName("Титаник");
         film.setDescription("про любовь");
-        film.setReleaseData(LocalDate.of(1994, 12, 14));
+        film.setReleaseDate(LocalDate.of(1994, 12, 14));
         film.setDuration(30);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -36,7 +39,7 @@ class FilmsTests {
         Film film1 = new Film();
         film1.setName("");
         film1.setDescription("про любовь");
-        film1.setReleaseData(LocalDate.of(1996, 12, 14));
+        film1.setReleaseDate(LocalDate.of(1996, 12, 14));
         film1.setDuration(30);
         Set<ConstraintViolation<Film>> violations = validator.validate(film1);
 
@@ -51,7 +54,7 @@ class FilmsTests {
         film1.setDescription("про любовь про любовь про любовь про любовь про любовь про любовь про любовь про любовь" +
                 "про любовь про любовь про любовь про любовь про любовь про любовь про любовь про любовь" +
                 "про любовь про любовь про любовь про любовь про любовь про любовь про любовь про любовь");
-        film1.setReleaseData(LocalDate.of(1996, 12, 14));
+        film1.setReleaseDate(LocalDate.of(1996, 12, 14));
         film1.setDuration(30);
         Set<ConstraintViolation<Film>> violations = validator.validate(film1);
 
@@ -64,7 +67,7 @@ class FilmsTests {
         Film film1 = new Film();
         film1.setName("Титаник");
         film1.setDescription("про любовь");
-        film1.setReleaseData(LocalDate.of(1996, 12, 14));
+        film1.setReleaseDate(LocalDate.of(1996, 12, 14));
         film1.setDuration(-30);
         Set<ConstraintViolation<Film>> violations = validator.validate(film1);
 

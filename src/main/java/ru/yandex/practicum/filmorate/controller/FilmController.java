@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class FilmController {
@@ -18,10 +20,10 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
-        log.info("Получен зарос");
-        film.setId(id);
-        films.put(id, film);
+        log.info("Получен запрос");
         id += 1;
+        films.put(id, film);
+        film.setId(id);
         return film;
     }
 
@@ -31,17 +33,17 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             throw new ValidationException("Такого id не существует");
         } else {
-            if (film.getReleaseData().isAfter(LocalDate.of(1995, 12, 28))) {
-                films.remove(film.getId());
-                films.put(film.getId(), film);
-            }
+            films.remove(film.getId());
+            films.put(film.getId(), film);
         }
         return film;
     }
 
     @GetMapping("/films")
-    public HashMap<Integer, Film> getFilms() {
+    public List<Film> getFilms() {
         log.info("Получен зарос");
-        return films;
+        ArrayList<Film> result = new ArrayList<>(films.values());
+        result.sort(Comparator.comparingInt(Film::getId));
+        return result;
     }
 }

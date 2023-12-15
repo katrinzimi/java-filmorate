@@ -7,7 +7,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 @RestController
@@ -19,10 +21,10 @@ public class UserController {
     @PostMapping("/users")
     public User add(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        user.setId(id);
-        users.put(id, user);
         id += 1;
-        if (user.getName().isBlank()) {
+        users.put(id, user);
+        user.setId(id);
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         return user;
@@ -44,8 +46,8 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public HashMap<Integer, User> getUsers() {
+    public List<User> getUsers() {
         log.info("Получен зарос");
-        return users;
+        return new ArrayList<>(users.values());
     }
 }
