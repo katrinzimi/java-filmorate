@@ -35,7 +35,7 @@ public class UserController {
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        if (!users.containsKey(user.getId())&& user.getId() != null) {
+        if (!users.containsKey(user.getId()) && user.getId() != null) {
             throw new ValidationException("Такого id не существует");
         }
         users.put(user.getId(), user);
