@@ -22,8 +22,8 @@ public class FilmController {
     public Film add(@Valid @RequestBody Film film) {
         log.info("Получен запрос");
         counter++;
-        films.put(counter, film);
         film.setId(counter);
+        films.put(counter, film);
         log.info("Фильм создан: " + film);
         return film;
     }
@@ -31,7 +31,7 @@ public class FilmController {
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
         log.info("Получен зарос");
-        if (!films.containsKey(film.getId()) && film.getId() != null) {
+        if (film.getId() != null && !films.containsKey(film.getId())) {
             throw new ValidationException("Такого id не существует");
         }
         films.put(film.getId(), film);
@@ -42,7 +42,7 @@ public class FilmController {
     @GetMapping("/films")
     public List<Film> getFilms() {
         log.info("Получен зарос");
-        LinkedList<Film> result = new LinkedList<>(new ArrayList<>(films.values()));
+        LinkedList<Film> result = new LinkedList<>(films.values());
         log.info("Получен список фильмов: " + result);
         return result;
     }

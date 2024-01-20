@@ -22,11 +22,11 @@ public class UserController {
     public User add(@Valid @RequestBody User user) {
         log.info("Получен зарос");
         counter++;
-        users.put(counter, user);
-        user.setId(counter);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+        user.setId(counter);
+        users.put(counter, user);
         log.info("Пользователь создан: " + user);
         return user;
 
@@ -35,13 +35,13 @@ public class UserController {
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        if (!users.containsKey(user.getId()) && user.getId() != null) {
+        if (user.getId() != null && !users.containsKey(user.getId())) {
             throw new ValidationException("Такого id не существует");
         }
-        users.put(user.getId(), user);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+        users.put(user.getId(), user);
         log.info("Пользователь обновлен: " + user);
         return user;
     }
