@@ -16,14 +16,14 @@ import java.util.List;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     LinkedHashMap<Integer, Film> films = new LinkedHashMap<>();
-    int id;
+    int counter;
 
     @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
         log.info("Получен запрос");
-        id++;
-        films.put(id, film);
-        film.setId(id);
+        counter++;
+        films.put(counter, film);
+        film.setId(counter);
         log.info("Фильм создан: " + film);
         return film;
     }
@@ -31,10 +31,9 @@ public class FilmController {
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
         log.info("Получен зарос");
-        if (!films.containsKey(film.getId()) && film.getId() != 0) {
+        if (!films.containsKey(film.getId()) && film.getId() != null) {
             throw new ValidationException("Такого id не существует");
         }
-        films.remove(film.getId());
         films.put(film.getId(), film);
         log.info("Фильм обновлен: " + film);
         return film;

@@ -16,14 +16,14 @@ import java.util.List;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     HashMap<Integer, User> users = new HashMap<>();
-    int id;
+    int counter;
 
     @PostMapping("/users")
     public User add(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        id++;
-        users.put(id, user);
-        user.setId(id);
+        counter++;
+        users.put(counter, user);
+        user.setId(counter);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
@@ -35,10 +35,9 @@ public class UserController {
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        if (!users.containsKey(user.getId())) {
+        if (!users.containsKey(user.getId())&& user.getId() != null) {
             throw new ValidationException("Такого id не существует");
         }
-        users.remove(user.getId());
         users.put(user.getId(), user);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());

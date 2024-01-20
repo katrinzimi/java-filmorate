@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Data
 public class User {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "электронная почта не может быть пустой")
     @Email(message = "электронная почта должна содержать символ @")
