@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -19,5 +21,6 @@ public class Film {
     private LocalDate releaseDate;
     @PositiveOrZero(message = "продолжительность фильма должна быть положительной")
     private int duration;
+    private Set<Integer> like = new HashSet<>();
 
 }

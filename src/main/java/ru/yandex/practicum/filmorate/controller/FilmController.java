@@ -1,49 +1,65 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController
 public class FilmController {
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    LinkedHashMap<Integer, Film> films = new LinkedHashMap<>();
-    int counter;
+    private final FilmService filmServer;
+    Integer count10 = 10;
+
+    public FilmController(FilmService filmServer) {
+        this.filmServer = filmServer;
+    }
 
     @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
-        log.info("Получен запрос");
-        counter++;
-        film.setId(counter);
-        films.put(counter, film);
-        log.info("Фильм создан: " + film);
-        return film;
+        return filmServer.add(film);
     }
 
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Получен зарос");
-        if (film.getId() != null && !films.containsKey(film.getId())) {
-            throw new ValidationException("Такого id не существует");
-        }
-        films.put(film.getId(), film);
-        log.info("Фильм обновлен: " + film);
-        return film;
+        return filmServer.update(film);
     }
 
     @GetMapping("/films")
     public List<Film> getFilms() {
-        log.info("Получен зарос");
-        LinkedList<Film> result = new LinkedList<>(films.values());
-        log.info("Получен список фильмов: " + result);
-        return result;
+        return filmServer.getFilms();
+    }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        return filmServer.addLike(id, userId);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public Film deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        return filmServer.deleteLike(id, userId);
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> filmsPopular(@RequestParam(required = false) Integer count) throws IncorrectCountException {
+        if (count == null) {
+            count = count10;
+        }
+        if (count <= 0) {
+            throw new IncorrectCountException("Параметр count имеет отрицательное значение.");
+        }
+        return filmServer.getFilmsPopular(count);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final IncorrectCountException e) {
+        return new ErrorResponse(
+                "Ошибка с параметром count.", e.getMessage()
+        );
     }
 }
 
