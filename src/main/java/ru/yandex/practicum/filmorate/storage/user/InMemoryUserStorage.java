@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -13,7 +12,7 @@ public class InMemoryUserStorage implements UserStorage {
     int counter;
 
     @Override
-    public User addUser(User user) {
+    public User add(User user) {
         counter++;
         user.setId(counter);
         users.put(counter, user);
@@ -21,55 +20,33 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) {
-        if (user.getId() != null && !users.containsKey(user.getId())) {
-            throw new ValidationException("Такого id не существует");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    public User update(User user) {
         users.put(user.getId(), user);
         return user;
     }
 
     @Override
-    public List<User> getUsers() {
+    public List<User> getAll() {
         return new ArrayList<>(users.values());
     }
 
     public User addFriend(Integer userId, Integer friendId) {
         User user = users.get(userId);
-        if (user == null) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", userId));
-        }
-        if (!users.containsKey(friendId)) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", friendId));
-        }
         user.getFriends().add(friendId);
-        updateUser(user);
+        update(user);
         return user;
     }
 
     @Override
     public User deleteFriend(Integer userId, Integer friendId) {
         User user = users.get(userId);
-        if (user == null) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", userId));
-        }
-        if (!users.containsKey(friendId)) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", friendId));
-        }
         user.getFriends().remove(friendId);
-        updateUser(user);
         return user;
     }
 
     @Override
     public List<User> getFriends(Integer userId) {
         User user = users.get(userId);
-        if (user == null) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", userId));
-        }
         return user.getFriends().stream()
                 .map(friendId -> users.get(friendId))
                 .collect(Collectors.toList());
@@ -78,18 +55,17 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public List<User> getCommonFriends(Integer userId, Integer anotherId) {
         User user = users.get(userId);
-        if (user == null) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", userId));
-        }
         User anotherUser = users.get(anotherId);
-        if (anotherUser == null) {
-            throw new ValidationException(String.format("Пользователя с id = %d не существует", anotherId));
-        }
         Set<Integer> commonFriendsIds = new HashSet<>(user.getFriends());
         commonFriendsIds.retainAll(anotherUser.getFriends());
         return commonFriendsIds.stream()
                 .map(friendId -> users.get(friendId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public User findUser(Integer id) {
+        return users.get(id);
     }
 
 }

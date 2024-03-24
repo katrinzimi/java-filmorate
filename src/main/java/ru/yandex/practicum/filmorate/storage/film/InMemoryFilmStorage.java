@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.LinkedHashMap;
@@ -24,24 +23,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        if (film.getId() != null && !films.containsKey(film.getId())) {
-            throw new ValidationException("Такого id не существует");
-        }
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public List<Film> getFilms() {
+    public List<Film> getAll() {
         return new LinkedList<>(films.values());
     }
 
     public Film addLike(Integer filmId, Integer userId) {
         Film film = films.get(filmId);
-        if (film == null && !films.containsKey(filmId)) {
-            throw new ValidationException(String.format("Фиьма с id = %d не существует", filmId));
-        }
-        assert film != null;
         film.getLike().add(userId);
         update(film);
         return film;
@@ -55,12 +47,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public List<Film> getFilmsPopular(Integer count) {
-        return films.keySet().stream().sorted(
-                        (o1, o2) -> Integer.compare(films.get(o2).getLike().size(),
-                                films.get(o1).getLike().size()))
-                .map(filmLike -> films.get(filmLike))
+        return films.values().stream().sorted(
+                        (o1, o2) -> Integer.compare(o2.getLike().size(),
+                                o1.getLike().size()))
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Film findFilm(Integer id) {
+        return films.get(id);
     }
 
 }

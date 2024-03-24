@@ -9,12 +9,14 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    List<Film> getFilms();
+    List<Film> getAll();
 
     Film addLike(Integer filmId, Integer userId);
 
     Film deleteLike(Integer filmId, Integer userId);
 
     List<Film> getFilmsPopular(Integer count);
+
+    Film findFilm(Integer id);
 
 }

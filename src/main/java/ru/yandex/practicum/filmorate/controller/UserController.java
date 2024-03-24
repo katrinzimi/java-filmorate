@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -7,7 +8,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
-
+@Slf4j
 @RestController
 public class UserController {
     private final UserService userService;
@@ -18,27 +19,39 @@ public class UserController {
 
     @PostMapping("/users")
     public User add(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+        log.info("Получен зарос");
+        User result = userService.add(user);
+        log.info("Пользователь создан: " + result);
+        return result;
     }
 
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
-        return userService.updateUser(user);
+        log.info("Получен зарос");
+        User result = userService.update(user);
+        log.info("Пользователь обновлен: " + result);
+        return result;
     }
 
     @GetMapping("/users")
     public List<User> getUsers() {
-        return userService.getUsers();
+        return userService.getAll();
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public User addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.addFriend(id, friendId);
+        log.info("Получен зарос");
+        User result = userService.addFriend(id, friendId);
+        log.info("Друг добавлен" + result);
+        return result;
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public User deleteFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.deleteFriend(id, friendId);
+        log.info("Получен зарос");
+        User result = userService.deleteFriend(id, friendId);
+        log.info("Друг удален" + result);
+        return result;
     }
 
     @GetMapping("/users/{id}/friends")
