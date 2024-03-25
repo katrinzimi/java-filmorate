@@ -42,7 +42,7 @@ public class BaseUserService implements UserService {
         return userStorage.getAll();
     }
 
-    public User addFriend(Integer userId, Integer friendId) {
+    public User addFriend(int userId, int friendId) {
         log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
@@ -57,7 +57,7 @@ public class BaseUserService implements UserService {
         return result;
     }
 
-    public User deleteFriend(Integer userId, Integer friendId) {
+    public User deleteFriend(int userId, int friendId) {
         log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
@@ -72,7 +72,7 @@ public class BaseUserService implements UserService {
         return result;
     }
 
-    public List<User> getFriends(Integer userId) {
+    public List<User> getFriends(int userId) {
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
@@ -80,7 +80,7 @@ public class BaseUserService implements UserService {
         return userStorage.getFriends(userId);
     }
 
-    public List<User> getCommonFriends(Integer userId, Integer another) {
+    public List<User> getCommonFriends(int userId, int another) {
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));

@@ -4,17 +4,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
 @Service
 @Slf4j
 public class BaseFilmService implements FilmService {
-    private final InMemoryFilmStorage filmStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
-    public BaseFilmService(InMemoryFilmStorage filmStorage) {
+    public BaseFilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public Film create(Film film) {
@@ -34,21 +38,33 @@ public class BaseFilmService implements FilmService {
         return filmStorage.getAll();
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
+    public void addLike(int filmId, int userId) {
         Film film = filmStorage.findById(filmId);
-        if (film.getId() == null) {
+        User user = userStorage.findById(userId);
+        if (film == null) {
             throw new NotFoundException(String.format("Фиьма с id = %d не существует", filmId));
         }
-        Film result = filmStorage.addLike(filmId, userId);
-        return result;
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
+        }
+        filmStorage.addLike(filmId, userId);
+
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.deleteLike(filmId, userId);
-        return film;
+    public void deleteLike(int filmId, int userId) {
+        Film film = filmStorage.findById(filmId);
+        User user = userStorage.findById(userId);
+        if (film == null) {
+            throw new NotFoundException(String.format("Фильма с id = %d не существует", filmId));
+        }
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
+        }
+
+        filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getFilmsPopular(Integer count) {
+    public List<Film> getFilmsPopular(int count) {
         return filmStorage.getFilmsPopular(count);
     }
 }

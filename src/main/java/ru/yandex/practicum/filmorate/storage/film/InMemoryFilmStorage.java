@@ -32,21 +32,19 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new LinkedList<>(films.values());
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
+    public void addLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.getLike().add(userId);
         update(film);
-        return film;
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
+    public void deleteLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.getLike().remove(userId);
         update(film);
-        return film;
     }
 
-    public List<Film> getFilmsPopular(Integer count) {
+    public List<Film> getFilmsPopular(int count) {
         return films.values().stream().sorted(
                         (o1, o2) -> Integer.compare(o2.getLike().size(),
                                 o1.getLike().size()))
@@ -55,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findById(Integer id) {
+    public Film findById(int id) {
         return films.get(id);
     }
 
