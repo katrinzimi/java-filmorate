@@ -16,7 +16,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(final ValidationException e) {
-        log.warn("Ошибка 400 при обработке запроса",e);
+        log.warn("Ошибка 400 при обработке запроса", e);
         return new ErrorResponse(
                 "Ошибка с параметром count.", e.getMessage()
         );
@@ -25,15 +25,16 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
-        log.warn("Ошибка 404 при обработке запроса",e);
+        log.warn("Ошибка 404 при обработке запроса", e);
         return new ErrorResponse(
                 "Объект не найден", e.getMessage()
         );
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handle5xx(final Exception e) {
-        log.error("Ошибка 500 при обработке запроса",e);
+        log.error("Ошибка 500 при обработке запроса", e);
         return new ErrorResponse(
                 "Внутренняя ошибка сервера", e.getMessage()
         );
