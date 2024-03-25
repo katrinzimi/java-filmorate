@@ -39,7 +39,7 @@ public class BaseFilmService implements FilmService {
         return filmStorage.getAll();
     }
 
-    public Film addLike(int filmId, int userId) {
+    public Film addLike(Integer filmId, Integer userId) {
         log.info("Получен запрос");
         Film film = filmStorage.findById(filmId);
         List<Film> films = filmStorage.getAll();
@@ -51,7 +51,7 @@ public class BaseFilmService implements FilmService {
         return result;
     }
 
-    public Film deleteLike(int filmId, int userId) {
+    public Film deleteLike(Integer filmId, Integer userId) {
         log.info("Получен запрос");
         Film film = filmStorage.deleteLike(filmId, userId);
         log.info("Фильм удален");

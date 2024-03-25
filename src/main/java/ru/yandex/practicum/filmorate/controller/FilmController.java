@@ -40,7 +40,7 @@ public class FilmController {
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Получен запрос");
         Film result = filmService.addLike(id, userId);
         log.info("Фильм добавлен");
@@ -48,7 +48,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable int id, @PathVariable int userId) {
+    public Film deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Получен запрос");
         Film film = filmService.deleteLike(id, userId);
         log.info("Фильм удален");
