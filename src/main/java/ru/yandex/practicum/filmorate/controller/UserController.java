@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable int id, @PathVariable int friendId) {
+    public User addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Получен зарос");
         User result = userService.addFriend(id, friendId);
         log.info("Друг добавлен" + result);
