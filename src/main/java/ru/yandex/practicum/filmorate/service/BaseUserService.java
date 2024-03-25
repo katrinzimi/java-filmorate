@@ -18,17 +18,13 @@ public class BaseUserService implements UserService {
     }
 
     public User create(User user) {
-        log.info("Получен зарос");
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        User result = userStorage.create(user);
-        log.info("Пользователь создан: " + result);
-        return result;
+        return userStorage.create(user);
     }
 
     public User update(User user) {
-        log.info("Получен зарос");
         User user1 = userStorage.findById(user.getId());
         if (user.getId() != null && user1 == null) {
             throw new NotFoundException("Такого id не существует");

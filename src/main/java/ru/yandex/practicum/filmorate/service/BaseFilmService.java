@@ -18,21 +18,16 @@ public class BaseFilmService implements FilmService {
     }
 
     public Film create(Film film) {
-        log.info("Получен запрос");
         Film add = filmStorage.create(film);
-        log.info("Фильм создан: " + film);
         return add;
     }
 
     public Film update(Film film) {
-        log.info("Получен запрос");
         Film film1 = filmStorage.findById(film.getId());
-        if (film.getId() != null && film1 == null) {
+        if (film1 == null) {
             throw new NotFoundException("Такого id не существует");
         }
-        Film update = filmStorage.update(film);
-        log.info("Фильм обновлен: " + film);
-        return update;
+        return filmStorage.update(film);
     }
 
     public List<Film> getAll() {
@@ -40,21 +35,16 @@ public class BaseFilmService implements FilmService {
     }
 
     public Film addLike(Integer filmId, Integer userId) {
-        log.info("Получен запрос");
         Film film = filmStorage.findById(filmId);
-        List<Film> films = filmStorage.getAll();
-        if (film.getId() == null && !films.contains(film)) {
+        if (film.getId() == null) {
             throw new NotFoundException(String.format("Фиьма с id = %d не существует", filmId));
         }
         Film result = filmStorage.addLike(filmId, userId);
-        log.info("Фильм добавлен");
         return result;
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        log.info("Получен запрос");
         Film film = filmStorage.deleteLike(filmId, userId);
-        log.info("Фильм удален");
         return film;
     }
 
