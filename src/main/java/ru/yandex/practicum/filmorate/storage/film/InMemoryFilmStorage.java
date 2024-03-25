@@ -14,7 +14,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     int counter;
 
     @Override
-    public Film add(Film film) {
+    public Film create(Film film) {
         counter++;
         film.setId(counter);
         films.put(counter, film);
@@ -32,14 +32,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new LinkedList<>(films.values());
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
+    public Film addLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.getLike().add(userId);
         update(film);
         return film;
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
+    public Film deleteLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.getLike().remove(userId);
         update(film);
@@ -55,7 +55,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findFilm(Integer id) {
+    public Film findById(int id) {
         return films.get(id);
     }
 

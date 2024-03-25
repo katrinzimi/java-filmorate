@@ -10,26 +10,26 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class InMemoryUserService implements UserService {
+public class BaseUserService implements UserService {
     private final UserStorage userStorage;
 
-    public InMemoryUserService(UserStorage userStorage) {
+    public BaseUserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    public User add(User user) {
+    public User create(User user) {
         log.info("Получен зарос");
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        User result = userStorage.add(user);
+        User result = userStorage.create(user);
         log.info("Пользователь создан: " + result);
         return result;
     }
 
     public User update(User user) {
         log.info("Получен зарос");
-        User user1 = userStorage.findUser(user.getId());
+        User user1 = userStorage.findById(user.getId());
         if (user.getId() != null && user1 == null) {
             throw new NotFoundException("Такого id не существует");
         }
@@ -46,59 +46,54 @@ public class InMemoryUserService implements UserService {
         return userStorage.getAll();
     }
 
-    public User addFriend(Integer userId, Integer friendId) {
+    public User addFriend(int userId, int friendId) {
         log.info("Получен зарос");
-        User user = userStorage.findUser(userId);
+        User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
         }
-        if (userStorage.findUser(friendId) == null) {
+        if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
         userStorage.addFriend(friendId, userId);
         User result = userStorage.addFriend(userId, friendId);
-        log.info("Друг добавлен");
-        return result;
+        log.info("Друг добавлен" + result);
+        return user;
     }
 
-    public User deleteFriend(Integer userId, Integer friendId) {
+    public User deleteFriend(int userId, int friendId) {
         log.info("Получен зарос");
-        User user = userStorage.findUser(userId);
+        User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
         }
-        if (userStorage.findUser(friendId) == null) {
+        if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
         userStorage.deleteFriend(friendId, userId);
         User result = userStorage.deleteFriend(userId, friendId);
-        log.info("Друг удален");
-        return result;
+        log.info("Друг удален" + result);
+        return user;
     }
 
-    public List<User> getFriends(Integer userId) {
-        User user = userStorage.findUser(userId);
+    public List<User> getFriends(int userId) {
+        User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
         }
         return userStorage.getFriends(userId);
     }
 
-    public List<User> getCommonFriends(Integer userId, Integer another) {
-        User user = userStorage.findUser(userId);
+    public List<User> getCommonFriends(int userId, int another) {
+        User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
         }
-        User anotherUser = userStorage.findUser(another);
+        User anotherUser = userStorage.findById(another);
         if (anotherUser == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", another));
         }
         return userStorage.getCommonFriends(userId, another);
-    }
-
-    @Override
-    public User findUser(Integer id) {
-        return userStorage.findUser(id);
     }
 
 }

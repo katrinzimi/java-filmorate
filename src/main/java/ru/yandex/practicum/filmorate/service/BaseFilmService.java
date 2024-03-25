@@ -10,23 +10,23 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class InMemoryFilmService implements FilmService {
+public class BaseFilmService implements FilmService {
     private final InMemoryFilmStorage filmStorage;
 
-    public InMemoryFilmService(InMemoryFilmStorage filmStorage) {
+    public BaseFilmService(InMemoryFilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
-    public Film add(Film film) {
+    public Film create(Film film) {
         log.info("Получен запрос");
-        Film add = filmStorage.add(film);
+        Film add = filmStorage.create(film);
         log.info("Фильм создан: " + film);
         return add;
     }
 
     public Film update(Film film) {
         log.info("Получен запрос");
-        Film film1 = filmStorage.findFilm(film.getId());
+        Film film1 = filmStorage.findById(film.getId());
         if (film.getId() != null && film1 == null) {
             throw new NotFoundException("Такого id не существует");
         }
@@ -39,9 +39,9 @@ public class InMemoryFilmService implements FilmService {
         return filmStorage.getAll();
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
+    public Film addLike(int filmId, int userId) {
         log.info("Получен запрос");
-        Film film = filmStorage.findFilm(filmId);
+        Film film = filmStorage.findById(filmId);
         List<Film> films = filmStorage.getAll();
         if (film.getId() == null && !films.contains(film)) {
             throw new NotFoundException(String.format("Фиьма с id = %d не существует", filmId));
@@ -51,7 +51,7 @@ public class InMemoryFilmService implements FilmService {
         return result;
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
+    public Film deleteLike(int filmId, int userId) {
         log.info("Получен запрос");
         Film film = filmStorage.deleteLike(filmId, userId);
         log.info("Фильм удален");

@@ -12,7 +12,7 @@ public class InMemoryUserStorage implements UserStorage {
     int counter;
 
     @Override
-    public User add(User user) {
+    public User create(User user) {
         counter++;
         user.setId(counter);
         users.put(counter, user);
@@ -30,7 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    public User addFriend(Integer userId, Integer friendId) {
+    public User addFriend(int userId, int friendId) {
         User user = users.get(userId);
         user.getFriends().add(friendId);
         update(user);
@@ -38,14 +38,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User deleteFriend(Integer userId, Integer friendId) {
+    public User deleteFriend(int userId, int friendId) {
         User user = users.get(userId);
         user.getFriends().remove(friendId);
         return user;
     }
 
     @Override
-    public List<User> getFriends(Integer userId) {
+    public List<User> getFriends(int userId) {
         User user = users.get(userId);
         return user.getFriends().stream()
                 .map(friendId -> users.get(friendId))
@@ -53,7 +53,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getCommonFriends(Integer userId, Integer anotherId) {
+    public List<User> getCommonFriends(int userId, int anotherId) {
         User user = users.get(userId);
         User anotherUser = users.get(anotherId);
         Set<Integer> commonFriendsIds = new HashSet<>(user.getFriends());
@@ -64,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User findUser(Integer id) {
+    public User findById(int id) {
         return users.get(id);
     }
 
