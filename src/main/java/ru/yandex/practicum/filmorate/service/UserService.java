@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 
 public interface UserService {
-    User add(User user);
+    User create(User user);
 
     User update(User user);
 
@@ -19,5 +19,4 @@ public interface UserService {
 
     List<User> getCommonFriends(Integer userId, Integer anotherId);
 
-    User findUser(Integer id);
 }

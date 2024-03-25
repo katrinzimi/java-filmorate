@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmService {
-    Film add(Film film);
+    Film create(Film film);
 
     Film update(Film film);
 
@@ -16,4 +16,5 @@ public interface FilmService {
     Film deleteLike(Integer filmId, Integer userId);
 
     List<Film> getFilmsPopular(Integer count);
+
 }

@@ -12,7 +12,7 @@ public class InMemoryUserStorage implements UserStorage {
     int counter;
 
     @Override
-    public User add(User user) {
+    public User create(User user) {
         counter++;
         user.setId(counter);
         users.put(counter, user);
@@ -64,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User findUser(Integer id) {
+    public User findById(Integer id) {
         return users.get(id);
     }
 

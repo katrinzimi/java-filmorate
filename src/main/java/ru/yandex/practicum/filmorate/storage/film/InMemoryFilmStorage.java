@@ -14,7 +14,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     int counter;
 
     @Override
-    public Film add(Film film) {
+    public Film create(Film film) {
         counter++;
         film.setId(counter);
         films.put(counter, film);
@@ -55,7 +55,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findFilm(Integer id) {
+    public Film findById(Integer id) {
         return films.get(id);
     }
 

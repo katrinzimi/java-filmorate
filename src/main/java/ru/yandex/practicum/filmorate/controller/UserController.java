@@ -18,9 +18,9 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User add(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         log.info("Получен зарос");
-        User result = userService.add(user);
+        User result = userService.create(user);
         log.info("Пользователь создан: " + result);
         return result;
     }

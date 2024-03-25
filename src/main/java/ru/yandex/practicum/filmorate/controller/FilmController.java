@@ -19,9 +19,9 @@ public class FilmController {
     }
 
     @PostMapping("/films")
-    public Film add(@Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.info("Получен запрос");
-        Film add = filmService.add(film);
+        Film add = filmService.create(film);
         log.info("Фильм создан: " + film);
         return add;
     }
