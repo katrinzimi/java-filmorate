@@ -54,7 +54,7 @@ public class BaseUserService implements UserService {
         userStorage.addFriend(friendId, userId);
         User result = userStorage.addFriend(userId, friendId);
         log.info("Друг добавлен" + result);
-        return user;
+        return result;
     }
 
     public User deleteFriend(Integer userId, Integer friendId) {
@@ -69,7 +69,7 @@ public class BaseUserService implements UserService {
         userStorage.deleteFriend(friendId, userId);
         User result = userStorage.deleteFriend(userId, friendId);
         log.info("Друг удален" + result);
-        return user;
+        return result;
     }
 
     public List<User> getFriends(Integer userId) {

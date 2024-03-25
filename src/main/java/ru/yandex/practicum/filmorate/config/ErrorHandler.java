@@ -5,13 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.ErrorResponse;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import javax.validation.ValidationException;
 
 @Slf4j
-@Configuration
+@RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
