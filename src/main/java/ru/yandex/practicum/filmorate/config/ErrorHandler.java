@@ -31,12 +31,4 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handle5xx(final Exception e) {
-        log.error("Ошибка 500 при обработке запроса", e);
-        return new ErrorResponse(
-                "Внутренняя ошибка сервера", e.getMessage()
-        );
-    }
 }
