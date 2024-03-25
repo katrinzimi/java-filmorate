@@ -39,17 +39,19 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+    public User addFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Получен зарос");
         User result = userService.addFriend(id, friendId);
         log.info("Друг добавлен" + result);
+        return result;
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void deleteFriends(@PathVariable Integer  id, @PathVariable Integer friendId) {
+    public User deleteFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Получен зарос");
         User result = userService.deleteFriend(id, friendId);
         log.info("Друг удален" + result);
+        return result;
     }
 
     @GetMapping("/users/{id}/friends")
