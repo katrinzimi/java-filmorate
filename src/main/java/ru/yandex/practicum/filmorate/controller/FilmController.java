@@ -1,49 +1,62 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class FilmController {
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    LinkedHashMap<Integer, Film> films = new LinkedHashMap<>();
-    int counter;
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @PostMapping("/films")
-    public Film add(@Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.info("Получен запрос");
-        counter++;
-        film.setId(counter);
-        films.put(counter, film);
+        Film add = filmService.create(film);
         log.info("Фильм создан: " + film);
-        return film;
+        return add;
     }
 
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Получен зарос");
-        if (film.getId() != null && !films.containsKey(film.getId())) {
-            throw new ValidationException("Такого id не существует");
-        }
-        films.put(film.getId(), film);
+        log.info("Получен запрос");
+        Film update = filmService.update(film);
         log.info("Фильм обновлен: " + film);
-        return film;
+        return update;
     }
 
     @GetMapping("/films")
     public List<Film> getFilms() {
-        log.info("Получен зарос");
-        LinkedList<Film> result = new LinkedList<>(films.values());
-        log.info("Получен список фильмов: " + result);
-        return result;
+        return filmService.getAll();
     }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос");
+        filmService.addLike(id, userId);
+        log.info("Фильм добавлен");
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос");
+        filmService.deleteLike(id, userId);
+        log.info("Фильм удален");
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> filmsPopular(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
+        return filmService.getFilmsPopular(count);
+    }
+
 }
 

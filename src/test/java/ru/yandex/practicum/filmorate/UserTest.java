@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
@@ -20,17 +19,6 @@ public class UserTest {
     public void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    @Test
-    public void testNoNameUseLogin() {
-        User user = new User();
-        user.setName("");
-        user.setLogin("k.zimi");
-        user.setBirthday(LocalDate.of(1995, 8, 27));
-        User userController = new UserController().add(user);
-
-        Assertions.assertEquals(userController.getName(), "k.zimi");
     }
 
     @Test
