@@ -1,13 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import javax.validation.ValidationException;
 import java.util.List;
 
 @Service
@@ -16,12 +20,20 @@ public class BaseFilmService implements FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    public BaseFilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public BaseFilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public Film create(Film film) {
+        if (filmStorage.getMpaById(film.getMpa().getId()) == null) {
+            throw new ValidationException("MPA не найден");
+        }
+        for (Genre genre : film.getGenres()) {
+            if ((filmStorage.getGenreById(genre.getId())) == null) {
+                throw new ValidationException("Жанр не найден");
+            }
+        }
         Film add = filmStorage.create(film);
         return add;
     }
@@ -67,4 +79,38 @@ public class BaseFilmService implements FilmService {
     public List<Film> getFilmsPopular(int count) {
         return filmStorage.getFilmsPopular(count);
     }
+
+    @Override
+    public Film findById(int id) {
+        return filmStorage.findById(id);
+    }
+
+    @Override
+    public List<Rating> getMpaAll() {
+        return filmStorage.getMpaAll();
+    }
+
+    @Override
+    public Rating getMpaById(int id) {
+        Rating result = filmStorage.getMpaById(id);
+        if (result == null) {
+            throw new NotFoundException("MPA не найден");
+        }
+        return result;
+    }
+
+    @Override
+    public List<Genre> getGenreAll() {
+        return filmStorage.getGenreAll();
+    }
+
+    @Override
+    public Genre getGenreById(int id) {
+        Genre result = filmStorage.getGenreById(id);
+        if (result == null) {
+            throw new NotFoundException("Жанр не найден");
+        }
+        return result;
+    }
+
 }

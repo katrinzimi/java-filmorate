@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,7 +14,7 @@ import java.util.List;
 public class BaseUserService implements UserService {
     private final UserStorage userStorage;
 
-    public BaseUserService(UserStorage userStorage) {
+    public BaseUserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -42,7 +43,7 @@ public class BaseUserService implements UserService {
         return userStorage.getAll();
     }
 
-    public User addFriend(int userId, int friendId) {
+    public void addFriend(int userId, int friendId) {
         log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
@@ -51,13 +52,12 @@ public class BaseUserService implements UserService {
         if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
-        userStorage.addFriend(friendId, userId);
-        User result = userStorage.addFriend(userId, friendId);
-        log.info("Друг добавлен" + result);
-        return result;
+        userStorage.addFriend(userId, friendId);
+        log.info("Друг добавлен");
+
     }
 
-    public User deleteFriend(int userId, int friendId) {
+    public void deleteFriend(int userId, int friendId) {
         log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
@@ -66,10 +66,9 @@ public class BaseUserService implements UserService {
         if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
-        userStorage.deleteFriend(friendId, userId);
-        User result = userStorage.deleteFriend(userId, friendId);
-        log.info("Друг удален" + result);
-        return result;
+        userStorage.deleteFriend(userId, friendId);
+        log.info("Друг удален");
+
     }
 
     public List<User> getFriends(int userId) {
