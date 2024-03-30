@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jdk.jshell.Snippet;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
