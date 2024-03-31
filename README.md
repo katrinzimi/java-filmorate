@@ -14,3 +14,11 @@ Template repository for Filmorate project.
   ```sql
   select * from FILMS where id = ?
   ```
+- Получение списка друзей конкретного пользователя:
+  ```sql
+  select * from USERS where id in ( select friend_id from FRIENDS where user_id = ?)
+  ```
+- Получение списка популярных фильмов:
+  ```sql
+  SELECT FILM_ID FROM LIKES GROUP BY FILM_ID ORDER BY COUNT(*) DESC  limit ?
+  ```
