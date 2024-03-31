@@ -28,8 +28,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        Integer id = jdbcTemplate.queryForObject("SELECT NEXT VALUE FOR FILMS_SEQUENCE",
-                (rs, num) -> rs.getInt(1));
+        Integer id = film.getId();
+        if (id == null) {
+            id = jdbcTemplate.queryForObject("SELECT NEXT VALUE FOR FILMS_SEQUENCE",
+                    (rs, num) -> rs.getInt(1));
+        }
         String sqlQuery = "insert into films(id, name, description, releaseDate, duration, rating_id) " +
                 "values (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery,
@@ -71,10 +74,12 @@ public class FilmDbStorage implements FilmStorage {
         if (ratingId > 0) {
             rating = jdbcTemplate.queryForObject(sqlMpa, (rs1, rowNum) -> makeRating(rs1), ratingId);
         }
+        String sqlLike = "select USER_ID from LIKES WHERE FILM_ID = ?";
+        List<Integer> userIds = jdbcTemplate.query(sqlLike, (rs2, rowNum) -> rs2.getInt("USER_ID"), id);
         String sql = "select * from GENRES where id IN (select GENRE_ID from FILM_GENRE WHERE FILM_ID = ?)";
         List<Genre> genreList = jdbcTemplate.query(sql, (rs1, rowNum) -> makeGenre(rs1), id);
 
-        return new Film(id, name, description, releaseDate, duration, rating, List.of(), genreList);
+        return new Film(id, name, description, releaseDate, duration, rating, userIds, genreList);
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
@@ -179,7 +184,7 @@ public class FilmDbStorage implements FilmStorage {
         return queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);
     }
 
-    public <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
+    private  <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
         List<T> results = (List) jdbcTemplate.query((String) sql, (Object[]) args, (ResultSetExtractor) (new RowMapperResultSetExtractor(rowMapper, 1)));
         return DataAccessUtils.singleResult(results);
     }

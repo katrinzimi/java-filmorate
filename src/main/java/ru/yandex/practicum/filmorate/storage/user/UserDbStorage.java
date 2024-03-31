@@ -22,8 +22,11 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        Integer id = jdbcTemplate.queryForObject("SELECT NEXT VALUE FOR USERS_SEQUENCE",
-                (rs, num) -> rs.getInt(1));
+        Integer id = user.getId();
+        if (id == null) {
+            id = jdbcTemplate.queryForObject("SELECT NEXT VALUE FOR USERS_SEQUENCE",
+                    (rs, num) -> rs.getInt(1));
+        }
         String sqlQuery = "insert into users(id, email, login, name, birthday) " +
                 "values (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery,
