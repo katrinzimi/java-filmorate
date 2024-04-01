@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FilmStorage {
     Film create(Film film);
@@ -29,4 +30,5 @@ public interface FilmStorage {
 
     Genre getGenreById(int id);
 
+    boolean checkGenresExist(Set<Integer> genres);
 }

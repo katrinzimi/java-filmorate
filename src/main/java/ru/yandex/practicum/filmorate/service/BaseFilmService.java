@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.ValidationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,16 +27,19 @@ public class BaseFilmService implements FilmService {
     }
 
     public Film create(Film film) {
+        checkFilmReferences(film);
+        return filmStorage.create(film);
+    }
+
+    private void checkFilmReferences(Film film) {
         if (filmStorage.getMpaById(film.getMpa().getId()) == null) {
             throw new ValidationException("MPA не найден");
         }
-        for (Genre genre : film.getGenres()) {
-            if ((filmStorage.getGenreById(genre.getId())) == null) {
-                throw new ValidationException("Жанр не найден");
-            }
+
+        if (!filmStorage.checkGenresExist(film.getGenres().stream()
+                .map(Genre::getId).collect(Collectors.toSet()))) {
+            throw new ValidationException("Жанр не найден");
         }
-        Film add = filmStorage.create(film);
-        return add;
     }
 
     public Film update(Film film) {
@@ -43,6 +47,7 @@ public class BaseFilmService implements FilmService {
         if (film1 == null) {
             throw new NotFoundException("Такого id не существует");
         }
+        checkFilmReferences(film);
         return filmStorage.update(film);
     }
 

@@ -9,12 +9,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Film {
     private Integer id;
     @NotBlank(message = "не должно быть пустым")
@@ -26,7 +26,6 @@ public class Film {
     @PositiveOrZero(message = "продолжительность фильма должна быть положительной")
     private int duration;
     private Rating mpa;
-    private List<Integer> likes = new ArrayList<>();
-    private List<Genre> genres = new ArrayList<>();
-
+    private Set<Integer> likes = new LinkedHashSet<>();
+    private Set<Genre> genres = new LinkedHashSet<>();
 }

@@ -15,7 +15,9 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -79,7 +81,8 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select * from GENRES where id IN (select GENRE_ID from FILM_GENRE WHERE FILM_ID = ?)";
         List<Genre> genreList = jdbcTemplate.query(sql, (rs1, rowNum) -> makeGenre(rs1), id);
 
-        return new Film(id, name, description, releaseDate, duration, rating, userIds, genreList);
+        return new Film(id, name, description, releaseDate, duration, rating,
+                new LinkedHashSet<>(userIds), new LinkedHashSet<>(genreList));
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
@@ -184,7 +187,16 @@ public class FilmDbStorage implements FilmStorage {
         return queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);
     }
 
-    private  <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
+    @Override
+    public boolean checkGenresExist(Set<Integer> genres) {
+        String sql = String.format("select ID from GENRES where id in (%s)",genres.stream()
+                        .map(String::valueOf)
+                .collect(Collectors.joining(",")));
+        List<Integer> genreIds = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("ID"));
+        return genres.size() == genreIds.size();
+    }
+
+    private <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
         List<T> results = (List) jdbcTemplate.query((String) sql, (Object[]) args, (ResultSetExtractor) (new RowMapperResultSetExtractor(rowMapper, 1)));
         return DataAccessUtils.singleResult(results);
     }
