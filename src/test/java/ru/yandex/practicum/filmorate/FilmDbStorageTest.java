@@ -176,6 +176,7 @@ class FilmDbStorageTest {
         assertThat(genreAll.size())
                 .isEqualTo(6);
     }
+
     @Test
     public void testCheckGenreExist() {
         Assertions.assertTrue(filmStorage.checkGenresExist(Set.of(1, 2)));
