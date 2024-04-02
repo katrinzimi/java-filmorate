@@ -76,13 +76,10 @@ public class FilmDbStorage implements FilmStorage {
         if (ratingId > 0) {
             rating = jdbcTemplate.queryForObject(sqlMpa, (rs1, rowNum) -> makeRating(rs1), ratingId);
         }
-        String sqlLike = "select USER_ID from LIKES WHERE FILM_ID = ?";
-        List<Integer> userIds = jdbcTemplate.query(sqlLike, (rs2, rowNum) -> rs2.getInt("USER_ID"), id);
         String sql = "select * from GENRES where id IN (select GENRE_ID from FILM_GENRE WHERE FILM_ID = ?)";
         List<Genre> genreList = jdbcTemplate.query(sql, (rs1, rowNum) -> makeGenre(rs1), id);
 
-        return new Film(id, name, description, releaseDate, duration, rating,
-                new LinkedHashSet<>(userIds), new LinkedHashSet<>(genreList));
+        return new Film(id, name, description, releaseDate, duration, rating, new LinkedHashSet<>(genreList));
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
@@ -140,6 +137,7 @@ public class FilmDbStorage implements FilmStorage {
                 userId);
     }
 
+
     @Override
     public void deleteLike(int filmId, int userId) {
         String sqlQuery = "delete from LIKES where FILM_ID=? and USER_ID=? ";
@@ -188,9 +186,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Integer> getLikedUsersByFilmId(int id) {
+        String sql = "select USER_ID from LIKES where FILM_ID =? ";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"), id);
+    }
+
+    @Override
     public boolean checkGenresExist(Set<Integer> genres) {
-        String sql = String.format("select ID from GENRES where id in (%s)",genres.stream()
-                        .map(String::valueOf)
+        String sql = String.format("select ID from GENRES where id in (%s)", genres.stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining(",")));
         List<Integer> genreIds = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("ID"));
         return genres.size() == genreIds.size();

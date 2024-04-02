@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,7 +20,7 @@ public class BaseFilmService implements FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    public BaseFilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public BaseFilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -85,9 +84,14 @@ public class BaseFilmService implements FilmService {
         return filmStorage.getFilmsPopular(count);
     }
 
+
     @Override
     public Film findById(int id) {
-        return filmStorage.findById(id);
+        Film result = filmStorage.findById(id);
+        if (result == null) {
+            throw new NotFoundException(String.format("Фильма с id = %d не существует", id));
+        }
+        return result;
     }
 
     @Override

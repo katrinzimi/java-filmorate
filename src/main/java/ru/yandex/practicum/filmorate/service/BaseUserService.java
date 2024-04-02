@@ -14,7 +14,7 @@ import java.util.List;
 public class BaseUserService implements UserService {
     private final UserStorage userStorage;
 
-    public BaseUserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public BaseUserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

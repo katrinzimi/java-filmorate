@@ -30,5 +30,7 @@ public interface FilmStorage {
 
     Genre getGenreById(int id);
 
+    List<Integer> getLikedUsersByFilmId(int id);
+
     boolean checkGenresExist(Set<Integer> genres);
 }

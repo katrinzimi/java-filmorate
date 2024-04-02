@@ -26,6 +26,5 @@ public class Film {
     @PositiveOrZero(message = "продолжительность фильма должна быть положительной")
     private int duration;
     private Rating mpa;
-    private Set<Integer> likes = new LinkedHashSet<>();
     private Set<Genre> genres = new LinkedHashSet<>();
 }
