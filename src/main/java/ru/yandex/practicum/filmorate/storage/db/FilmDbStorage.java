@@ -1,31 +1,24 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-public class FilmDbStorage implements FilmStorage {
-    private JdbcTemplate jdbcTemplate;
+public class FilmDbStorage extends BaseStorage implements FilmStorage {
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
 
     @Override
@@ -72,7 +65,7 @@ public class FilmDbStorage implements FilmStorage {
         int duration = rs.getInt("duration");
         Integer ratingId = rs.getInt("rating_id");
         String sqlMpa = "select * from RATING where id = ? ";
-        Rating rating = null;
+        Mpa rating = null;
         if (ratingId > 0) {
             rating = jdbcTemplate.queryForObject(sqlMpa, (rs1, rowNum) -> makeRating(rs1), ratingId);
         }
@@ -89,11 +82,11 @@ public class FilmDbStorage implements FilmStorage {
         return new Genre(id, name);
     }
 
-    private Rating makeRating(ResultSet rs) throws SQLException {
+    private Mpa makeRating(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("id");
         String name = rs.getString("name");
 
-        return new Rating(id, name);
+        return new Mpa(id, name);
     }
 
     @Override
@@ -162,47 +155,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Rating> getMpaAll() {
-        String sql = "select * from RATING ";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs));
-    }
-
-    @Override
-    public Rating getMpaById(int id) {
-        String sql = "select * from RATING where id =?";
-        return queryForObject(sql, (rs, rowNum) -> makeRating(rs), id);
-    }
-
-    @Override
-    public List<Genre> getGenreAll() {
-        String sql = "select * from GENRES ";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
-    }
-
-    @Override
-    public Genre getGenreById(int id) {
-        String sql = "select * from GENRES where id =? ";
-        return queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);
-    }
-
-    @Override
     public List<Integer> getLikedUsersByFilmId(int id) {
         String sql = "select USER_ID from LIKES where FILM_ID =? ";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"), id);
-    }
-
-    @Override
-    public boolean checkGenresExist(Set<Integer> genres) {
-        String sql = String.format("select ID from GENRES where id in (%s)", genres.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",")));
-        List<Integer> genreIds = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("ID"));
-        return genres.size() == genreIds.size();
-    }
-
-    private <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
-        List<T> results = (List) jdbcTemplate.query((String) sql, (Object[]) args, (ResultSetExtractor) (new RowMapperResultSetExtractor(rowMapper, 1)));
-        return DataAccessUtils.singleResult(results);
     }
 
 }

@@ -1,19 +1,20 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
 @Service
 @Slf4j
-public class BaseUserService implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
-    public BaseUserService(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

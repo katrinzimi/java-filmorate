@@ -1,11 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.List;
-import java.util.Set;
 
 public interface FilmStorage {
     Film create(Film film);
@@ -22,15 +19,6 @@ public interface FilmStorage {
 
     Film findById(int id);
 
-    List<Rating> getMpaAll();
-
-    Rating getMpaById(int id);
-
-    List<Genre> getGenreAll();
-
-    Genre getGenreById(int id);
-
     List<Integer> getLikedUsersByFilmId(int id);
 
-    boolean checkGenresExist(Set<Integer> genres);
 }

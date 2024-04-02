@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,11 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserDbStorage implements UserStorage {
-    private final JdbcTemplate jdbcTemplate;
+public class UserDbStorage extends BaseStorage implements UserStorage {
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
 
     @Override

@@ -1,8 +1,7 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.db;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,10 +29,10 @@ class FilmDbStorageTest {
     UserDbStorage userDbStorage;
     Film newFilm = new Film(1, "film1", "description",
             LocalDate.of(2010, 1, 22), 15,
-            new Rating(1, "G"), Set.of(new Genre(1, "Комедия")));
+            new Mpa(1, "G"), Set.of(new Genre(1, "Комедия")));
     Film updateFilm = new Film(1, "film2", "description2",
             LocalDate.of(2012, 1, 22), 12,
-            new Rating(2, "PG"), Set.of(new Genre(2, "Драма")));
+            new Mpa(2, "PG"), Set.of(new Genre(2, "Драма")));
 
     @BeforeEach
     public void init() {
@@ -116,14 +115,14 @@ class FilmDbStorageTest {
 
         Film film2 = filmStorage.create(new Film(2, "film2", "description2",
                 LocalDate.of(2012, 1, 22), 25,
-                new Rating(1, "G"), Set.of(new Genre(1, "Комедия"))));
+                new Mpa(1, "G"), Set.of(new Genre(1, "Комедия"))));
 
         User user2 = userDbStorage.create(new User(2, "user2@email.ru", "vanya2",
                 "Ivan Petrov2", LocalDate.of(1992, 1, 1)));
 
         Film film3 = filmStorage.create(new Film(3, "film3", "description3",
                 LocalDate.of(2013, 1, 22), 35,
-                new Rating(1, "G"), Set.of(new Genre(1, "Комедия"))));
+                new Mpa(1, "G"), Set.of(new Genre(1, "Комедия"))));
 
         User user3 = userDbStorage.create(new User(3, "user3@email.ru", "vanya3",
                 "Ivan Petrov3", LocalDate.of(1993, 1, 1)));
@@ -139,45 +138,5 @@ class FilmDbStorageTest {
         assertThat(filmsPopular.stream().map(Film::getId).collect(Collectors.toList()))
                 .usingRecursiveComparison()
                 .isEqualTo(List.of(film3.getId(), film1.getId(), film2.getId()));
-    }
-
-    @Test
-    public void testGetMpaById() {
-        Rating mpa = filmStorage.getMpaById(1);
-
-        assertThat(mpa)
-                .usingRecursiveComparison()
-                .isEqualTo(new Rating(1, "G"));
-    }
-
-    @Test
-    public void testGetGenreById() {
-        Genre genre = filmStorage.getGenreById(1);
-
-        assertThat(genre)
-                .usingRecursiveComparison()
-                .isEqualTo(new Genre(1, "Комедия"));
-    }
-
-    @Test
-    public void testGetMpaAll() {
-        List<Rating> mpaAll = filmStorage.getMpaAll();
-
-        assertThat(mpaAll.size())
-                .isEqualTo(5);
-    }
-
-    @Test
-    public void testGetGenreAll() {
-        List<Genre> genreAll = filmStorage.getGenreAll();
-
-        assertThat(genreAll.size())
-                .isEqualTo(6);
-    }
-
-    @Test
-    public void testCheckGenreExist() {
-        Assertions.assertTrue(filmStorage.checkGenresExist(Set.of(1, 2)));
-        Assertions.assertFalse(filmStorage.checkGenresExist(Set.of(8, 12)));
     }
 }

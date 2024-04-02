@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Rating {
+public class Mpa {
     private Integer id;
     private String name;
 }
