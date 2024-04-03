@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.JdbcUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +33,7 @@ class UserDbStorageTest {
 
     @Test
     public void testFindUserById() {
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
 
         User savedUser = userStorage.findById(1);
@@ -46,7 +46,7 @@ class UserDbStorageTest {
 
     @Test
     public void testUpdateUser() {
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
         User update = userStorage.update(updateUser);
 
@@ -59,7 +59,7 @@ class UserDbStorageTest {
 
     @Test
     public void testGetAll() {
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
         List<User> all = userStorage.getAll();
 
@@ -73,7 +73,7 @@ class UserDbStorageTest {
 
     @Test
     public void testGetFriend() {
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
         userStorage.create(friendUser);
         userStorage.addFriend(newUser.getId(), friendUser.getId());
@@ -86,7 +86,7 @@ class UserDbStorageTest {
 
     @Test
     public void testDeleteFriend() {
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
         userStorage.create(friendUser);
         userStorage.addFriend(newUser.getId(), friendUser.getId());
@@ -101,7 +101,7 @@ class UserDbStorageTest {
     @Test
     public void testGetCommonFriends() {
         // Подготавливаем данные для теста
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        JdbcUserStorage userStorage = new JdbcUserStorage(jdbcTemplate);
         userStorage.create(newUser);
         userStorage.create(friendUser);
         User user3 = userStorage.create(new User(3, "user3@email.ru", "vanya1233",

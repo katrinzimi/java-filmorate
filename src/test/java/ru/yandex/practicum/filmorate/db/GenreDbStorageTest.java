@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.db.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.JdbcGenreStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.util.List;
@@ -24,7 +24,7 @@ class GenreDbStorageTest {
 
     @BeforeEach
     public void init() {
-        genreStorage = new GenreDbStorage(jdbcTemplate);
+        genreStorage = new JdbcGenreStorage(jdbcTemplate);
     }
 
     @Test

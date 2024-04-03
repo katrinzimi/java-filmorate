@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.db.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.JdbcMpaStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
@@ -22,7 +22,7 @@ class MpaDbStorageTest {
 
     @BeforeEach
     public void init() {
-        mpaStorage = new MpaDbStorage(jdbcTemplate);
+        mpaStorage = new JdbcMpaStorage(jdbcTemplate);
     }
 
     @Test

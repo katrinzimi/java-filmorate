@@ -10,9 +10,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public class MpaDbStorage extends BaseStorage implements MpaStorage {
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+public class JdbcMpaStorage implements MpaStorage {
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcMpaStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     private Mpa makeRating(ResultSet rs) throws SQLException {
@@ -31,7 +33,11 @@ public class MpaDbStorage extends BaseStorage implements MpaStorage {
     @Override
     public Mpa getMpaById(int id) {
         String sql = "select * from RATING where id =?";
-        return queryForObject(sql, (rs, rowNum) -> makeRating(rs), id);
+        List<Mpa> result = jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs), id);
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
     }
 
 }

@@ -12,10 +12,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-public class GenreDbStorage extends BaseStorage implements GenreStorage {
+public class JdbcGenreStorage implements GenreStorage {
+    private final JdbcTemplate jdbcTemplate;
 
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+    public JdbcGenreStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
@@ -34,7 +35,11 @@ public class GenreDbStorage extends BaseStorage implements GenreStorage {
     @Override
     public Genre getGenreById(int id) {
         String sql = "select * from GENRES where id =? ";
-        return queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);
+        List<Genre> result = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), id);
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
     }
 
     @Override

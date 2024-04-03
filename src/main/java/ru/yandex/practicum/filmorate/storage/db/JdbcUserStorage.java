@@ -14,10 +14,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserDbStorage extends BaseStorage implements UserStorage {
+public class JdbcUserStorage implements UserStorage {
+    private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+    public JdbcUserStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

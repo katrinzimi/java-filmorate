@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.JdbcFilmStorage;
+import ru.yandex.practicum.filmorate.storage.db.JdbcUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,9 +26,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmDbStorageTest {
+    private final NamedParameterJdbcOperations jdbcOperations;
     private final JdbcTemplate jdbcTemplate;
-    FilmDbStorage filmStorage;
-    UserDbStorage userDbStorage;
+    JdbcFilmStorage filmStorage;
+    JdbcUserStorage userDbStorage;
     Film newFilm = new Film(1, "film1", "description",
             LocalDate.of(2010, 1, 22), 15,
             new Mpa(1, "G"), Set.of(new Genre(1, "Комедия")));
@@ -36,8 +39,8 @@ class FilmDbStorageTest {
 
     @BeforeEach
     public void init() {
-        filmStorage = new FilmDbStorage(jdbcTemplate);
-        userDbStorage = new UserDbStorage(jdbcTemplate);
+        filmStorage = new JdbcFilmStorage(jdbcOperations);
+        userDbStorage = new JdbcUserStorage(jdbcTemplate);
     }
 
     @AfterEach
@@ -80,31 +83,6 @@ class FilmDbStorageTest {
         assertThat(all)
                 .usingRecursiveComparison()
                 .isEqualTo(List.of(newFilm));
-    }
-
-    @Test
-    public void testAddLike() {
-        Film film = filmStorage.create(newFilm);
-        User user = userDbStorage.create(new User(1, "user@email.ru", "vanya123",
-                "Ivan Petrov", LocalDate.of(1990, 1, 1)));
-        filmStorage.addLike(film.getId(), user.getId());
-        List<Integer> likedUsersByFilmId = filmStorage.getLikedUsersByFilmId(film.getId());
-        assertThat(likedUsersByFilmId)
-                .isEqualTo(List.of(user.getId()));
-    }
-
-    @Test
-    public void testDeleteLike() {
-        Film film = filmStorage.create(newFilm);
-        User user = userDbStorage.create(new User(1, "user@email.ru", "vanya123",
-                "Ivan Petrov", LocalDate.of(1990, 1, 1)));
-        filmStorage.addLike(film.getId(), user.getId());
-        filmStorage.deleteLike(film.getId(), user.getId());
-        List<Integer> likedUsersByFilmId = filmStorage.getLikedUsersByFilmId(film.getId());
-
-        assertThat(likedUsersByFilmId)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of());
     }
 
     @Test

@@ -19,6 +19,4 @@ public interface FilmStorage {
 
     Film findById(int id);
 
-    List<Integer> getLikedUsersByFilmId(int id);
-
 }
