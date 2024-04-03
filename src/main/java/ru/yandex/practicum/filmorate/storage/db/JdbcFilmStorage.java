@@ -1,5 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -7,16 +18,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class JdbcFilmStorage implements FilmStorage {
@@ -47,27 +53,31 @@ public class JdbcFilmStorage implements FilmStorage {
     }
 
     private void insertFilmGenres(Film film) {
+        String sql = "INSERT INTO film_genre(film_id, genre_id) VALUES (:film_id, :genre_id)";
         SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(film.getGenres().stream()
                 .map(genre -> (Map.of("film_id", film.getId(), "genre_id", genre.getId())))
                 .collect(Collectors.toList()));
 
-        jdbcOperations.batchUpdate("INSERT INTO film_genre(film_id, genre_id) VALUES (:film_id, :genre_id)", batch);
+        jdbcOperations.batchUpdate(sql, batch);
     }
 
     private Film selectFilmById(Integer filmId) {
-        String sql = "SELECT f.*,\n" +
-                "       r.name AS rating_name,\n" +
-                "       ARRAY_AGG(fg.genre_id) AS film_genres_id,\n" +
-                "       ARRAY_AGG(g.name) AS film_genres_name\n" +
-                "FROM films AS f\n" +
-                "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
-                "LEFT JOIN film_genre AS fg ON f.id = fg.film_id\n" +
-                "LEFT JOIN genres AS g ON fg.genre_id = g.id\n" +
-                "WHERE f.id = :id\n" +
-                "GROUP BY f.id;";
+        String sql = "SELECT f.*," +
+                "       r.name AS rating_name," +
+                "       ARRAY_AGG(fg.genre_id) AS film_genres_id," +
+                "       ARRAY_AGG(g.name) AS film_genres_name" +
+                " FROM films AS f" +
+                " LEFT JOIN rating AS r ON f.rating_id = r.id" +
+                " LEFT JOIN film_genre AS fg ON f.id = fg.film_id" +
+                " LEFT JOIN genres AS g ON fg.genre_id = g.id" +
+                " WHERE f.id = :id" +
+                " GROUP BY f.id;";
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", filmId);
-        return jdbcOperations.query(sql, namedParameters, this::makeFilm);
-
+        List<Film> result = jdbcOperations.query(sql, namedParameters, (rs, rowNum) -> makeFilm(rs));
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -81,13 +91,19 @@ public class JdbcFilmStorage implements FilmStorage {
         if (ratingId > 0) {
             rating = new Mpa(ratingId, rs.getString("rating_name"));
         }
-        Integer[] filmGenresId = (Integer[]) rs.getArray("film_genres_id").getArray();
-        String[] filmGenresName = (String[]) rs.getArray("film_genres_name").getArray();
-        Set<Genre> genres = new LinkedHashSet<>();
-        for (var i = 0; i < filmGenresId.length && i < filmGenresName.length; ++i) {
-            genres.add(new Genre(filmGenresId[i], filmGenresName[i]));
-        }
+        List<Integer> filmGenresId = Arrays.stream((Object[]) rs.getArray("film_genres_id").getArray())
+                .map(genreId -> (Integer) genreId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        List<String> filmGenresName = Arrays.stream((Object[]) rs.getArray("film_genres_name").getArray())
+                .map(genreName -> (String) genreName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
+        Set<Genre> genres = new LinkedHashSet<>();
+        for (var i = 0; i < filmGenresId.size() && i < filmGenresName.size(); ++i) {
+            genres.add(new Genre(filmGenresId.get(i), filmGenresName.get(i)));
+        }
         return new Film(id, name, description, releaseDate, duration, rating, genres);
     }
 
@@ -118,17 +134,17 @@ public class JdbcFilmStorage implements FilmStorage {
                 "       r.name AS rating_name," +
                 "       ARRAY_AGG(fg.genre_id) AS film_genres_id," +
                 "       ARRAY_AGG(g.name) AS film_genres_name" +
-                "FROM film AS f" +
-                "LEFT JOIN rating AS r ON f.rating_id = r.id" +
-                "LEFT JOIN film_genre AS fg ON f.id = fg.film_id" +
-                "LEFT JOIN genre AS g ON fg.genre_id = g.id" +
-                "GROUP BY f.id;";
-        return jdbcOperations.query(sql, (rs, rowNum) -> makeFilm(rs));
+                " FROM films AS f" +
+                " LEFT JOIN rating AS r ON f.rating_id = r.id" +
+                " LEFT JOIN film_genre AS fg ON f.id = fg.film_id" +
+                " LEFT JOIN genres AS g ON fg.genre_id = g.id" +
+                " GROUP BY f.id;";
+        return jdbcOperations.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
     public void addLike(int filmId, int userId) {
-        String sql = "MERGE INTO film_likes(film_id, user_id) values (:film_id, :user_id)";
+        String sql = "MERGE INTO LIKES(film_id, user_id) values (:film_id, :user_id)";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("film_id", filmId)
                 .addValue("user_id", userId);
@@ -150,7 +166,7 @@ public class JdbcFilmStorage implements FilmStorage {
         String sql = "SELECT FILM_ID FROM LIKES GROUP BY FILM_ID ORDER BY COUNT(*) DESC  limit :count";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("count", count);
-        List<Integer> filmIds = jdbcOperations.query(sql, namedParameters,(rs, rowNum) -> rs.getInt("FILM_ID"));
+        List<Integer> filmIds = jdbcOperations.query(sql, namedParameters, (rs, rowNum) -> rs.getInt("FILM_ID"));
         return filmIds.stream()
                 .map(this::selectFilmById)
                 .collect(Collectors.toList());
@@ -162,4 +178,3 @@ public class JdbcFilmStorage implements FilmStorage {
     }
 
 }
-

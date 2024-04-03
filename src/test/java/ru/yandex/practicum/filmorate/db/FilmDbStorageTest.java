@@ -1,5 +1,10 @@
 package ru.yandex.practicum.filmorate.db;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,17 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.db.JdbcFilmStorage;
 import ru.yandex.practicum.filmorate.storage.db.JdbcUserStorage;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -52,11 +53,10 @@ class FilmDbStorageTest {
 
     @Test
     public void testFindFilmById() {
-        filmStorage.create(newFilm);
+        Film savedFilm = filmStorage.create(newFilm);
+        Film film = filmStorage.findById(savedFilm.getId());
 
-        Film savedFilm = filmStorage.findById(1);
-
-        assertThat(savedFilm)
+        assertThat(film)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(newFilm);
@@ -64,24 +64,25 @@ class FilmDbStorageTest {
 
     @Test
     public void testUpdateUser() {
-        filmStorage.create(newFilm);
+        Film savedFilm = filmStorage.create(newFilm);
+        updateFilm.setId(savedFilm.getId());
         Film update = filmStorage.update(updateFilm);
 
-        Film savedUser = filmStorage.findById(1);
+        savedFilm = filmStorage.findById(savedFilm.getId());
 
         assertThat(update)
                 .usingRecursiveComparison()
-                .isEqualTo(savedUser);
+                .isEqualTo(savedFilm);
     }
 
     @Test
     public void testGetAll() {
-        filmStorage.create(newFilm);
+        Film savedFilm = filmStorage.create(newFilm);
         List<Film> all = filmStorage.getAll();
 
         assertThat(all)
                 .usingRecursiveComparison()
-                .isEqualTo(List.of(newFilm));
+                .isEqualTo(List.of(savedFilm));
     }
 
     @Test

@@ -37,12 +37,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void checkFilmReferences(Film film) {
+
         if (mpaStorage.getMpaById(film.getMpa().getId()) == null) {
             throw new ValidationException("MPA не найден");
         }
-
-        if (!genreStorage.checkGenresExist(film.getGenres().stream()
-                .map(Genre::getId).collect(Collectors.toSet()))) {
+        List<Integer> genreStorageIds = genreStorage.findByIds(film.getGenres().stream()
+                .map(Genre::getId).collect(Collectors.toSet()));
+        if (film.getGenres().size() != genreStorageIds.size()) {
             throw new ValidationException("Жанр не найден");
         }
     }

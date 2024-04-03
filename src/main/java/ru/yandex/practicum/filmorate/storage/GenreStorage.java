@@ -10,5 +10,5 @@ public interface GenreStorage {
 
     Genre getGenreById(int id);
 
-    boolean checkGenresExist(Set<Integer> genres);
+    List<Integer> findByIds(Set<Integer> genres);
 }

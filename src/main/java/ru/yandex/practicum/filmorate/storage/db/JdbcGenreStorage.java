@@ -42,13 +42,21 @@ public class JdbcGenreStorage implements GenreStorage {
         return result.get(0);
     }
 
-    @Override
+   /* @Override
     public boolean checkGenresExist(Set<Integer> genres) {
         String sql = String.format("select ID from GENRES where id in (%s)", genres.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(",")));
         List<Integer> genreIds = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("ID"));
         return genres.size() == genreIds.size();
+    }*/
+
+    @Override
+    public List<Integer> findByIds(Set<Integer> genres) {
+        String sql = String.format("select ID from GENRES where id in (%s)", genres.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("ID"));
     }
 
 }

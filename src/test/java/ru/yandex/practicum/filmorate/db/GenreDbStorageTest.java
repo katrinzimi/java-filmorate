@@ -44,9 +44,4 @@ class GenreDbStorageTest {
                 .isEqualTo(6);
     }
 
-    @Test
-    public void testCheckGenreExist() {
-        Assertions.assertTrue(genreStorage.checkGenresExist(Set.of(1, 2)));
-        Assertions.assertFalse(genreStorage.checkGenresExist(Set.of(8, 12)));
-    }
 }

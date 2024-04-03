@@ -33,9 +33,7 @@ public class UserServiceImpl implements UserService {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        User result = userStorage.update(user);
-        log.info("Пользователь обновлен: " + result);
-        return result;
+        return userStorage.update(user);
 
     }
 
@@ -44,7 +42,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
@@ -53,12 +50,10 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
         userStorage.addFriend(userId, friendId);
-        log.info("Друг добавлен");
 
     }
 
     public void deleteFriend(int userId, int friendId) {
-        log.info("Получен зарос");
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
@@ -67,7 +62,6 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
         userStorage.deleteFriend(userId, friendId);
-        log.info("Друг удален");
 
     }
 
