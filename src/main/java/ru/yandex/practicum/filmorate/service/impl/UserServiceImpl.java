@@ -1,19 +1,20 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
 @Service
 @Slf4j
-public class BaseUserService implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
-    public BaseUserService(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -32,9 +33,7 @@ public class BaseUserService implements UserService {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        User result = userStorage.update(user);
-        log.info("Пользователь обновлен: " + result);
-        return result;
+        return userStorage.update(user);
 
     }
 
@@ -42,8 +41,7 @@ public class BaseUserService implements UserService {
         return userStorage.getAll();
     }
 
-    public User addFriend(int userId, int friendId) {
-        log.info("Получен зарос");
+    public void addFriend(int userId, int friendId) {
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
@@ -51,14 +49,11 @@ public class BaseUserService implements UserService {
         if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
-        userStorage.addFriend(friendId, userId);
-        User result = userStorage.addFriend(userId, friendId);
-        log.info("Друг добавлен" + result);
-        return result;
+        userStorage.addFriend(userId, friendId);
+
     }
 
-    public User deleteFriend(int userId, int friendId) {
-        log.info("Получен зарос");
+    public void deleteFriend(int userId, int friendId) {
         User user = userStorage.findById(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", userId));
@@ -66,10 +61,8 @@ public class BaseUserService implements UserService {
         if (userStorage.findById(friendId) == null) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует", friendId));
         }
-        userStorage.deleteFriend(friendId, userId);
-        User result = userStorage.deleteFriend(userId, friendId);
-        log.info("Друг удален" + result);
-        return result;
+        userStorage.deleteFriend(userId, friendId);
+
     }
 
     public List<User> getFriends(int userId) {

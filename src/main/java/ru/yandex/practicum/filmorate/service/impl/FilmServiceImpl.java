@@ -1,29 +1,51 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import javax.validation.ValidationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BaseFilmService implements FilmService {
+public class FilmServiceImpl implements FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final GenreStorage genreStorage;
+    private final MpaStorage mpaStorage;
 
-    public BaseFilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmServiceImpl(FilmStorage filmStorage, UserStorage userStorage, GenreStorage genreStorage, MpaStorage mpaStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.genreStorage = genreStorage;
+        this.mpaStorage = mpaStorage;
     }
 
     public Film create(Film film) {
-        Film add = filmStorage.create(film);
-        return add;
+        checkFilmReferences(film);
+        return filmStorage.create(film);
+    }
+
+    private void checkFilmReferences(Film film) {
+
+        if (mpaStorage.getMpaById(film.getMpa().getId()) == null) {
+            throw new ValidationException("MPA не найден");
+        }
+        List<Integer> genreStorageIds = genreStorage.findByIds(film.getGenres().stream()
+                .map(Genre::getId).collect(Collectors.toSet()));
+        if (film.getGenres().size() != genreStorageIds.size()) {
+            throw new ValidationException("Жанр не найден");
+        }
     }
 
     public Film update(Film film) {
@@ -31,6 +53,7 @@ public class BaseFilmService implements FilmService {
         if (film1 == null) {
             throw new NotFoundException("Такого id не существует");
         }
+        checkFilmReferences(film);
         return filmStorage.update(film);
     }
 
@@ -67,4 +90,15 @@ public class BaseFilmService implements FilmService {
     public List<Film> getFilmsPopular(int count) {
         return filmStorage.getFilmsPopular(count);
     }
+
+
+    @Override
+    public Film findById(int id) {
+        Film result = filmStorage.findById(id);
+        if (result == null) {
+            throw new NotFoundException(String.format("Фильма с id = %d не существует", id));
+        }
+        return result;
+    }
+
 }

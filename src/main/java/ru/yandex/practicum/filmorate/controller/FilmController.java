@@ -58,5 +58,13 @@ public class FilmController {
         return filmService.getFilmsPopular(count);
     }
 
+    @GetMapping("/films/{id}")
+    public Film getFilmsId(@PathVariable int id) {
+        log.info("Получен запрос");
+        Film byId = filmService.findById(id);
+        log.info("sgdhj" + byId);
+        return byId;
+    }
+
 }
 
